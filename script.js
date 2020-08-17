@@ -7,6 +7,7 @@ if (searchBtn) {
     clearAllValue();
     clearFancyDisplay();
     document.querySelector('.display-title').innerHTML = 'Song Title Goes Here';
+    document.querySelector('.lyric').innerHTML = 'Lyrics Goes Here';
     getSongs(searchValue);
   });
 }
@@ -145,7 +146,6 @@ function fancyDisplay(data) {
       const id = data[i].id;
 
       document.getElementById(`fancy-get-lyrics-${id}`).onclick = function () {
-        console.log('hey');
         getLyrics(songTitle, artist);
       };
     }

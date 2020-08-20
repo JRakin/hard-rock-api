@@ -1,14 +1,29 @@
 const searchBtn = document.querySelector('.search-btn');
 const apiUrl = 'https://api.lyrics.ovh/';
 
+const searchVal = document.getElementById('search-value');
+
+searchVal.addEventListener('keyup', function (e) {
+  if (e.keyCode === 13) {
+    document.querySelector('.search-btn').click();
+  }
+});
+
 if (searchBtn) {
   searchBtn.addEventListener('click', (e) => {
     const searchValue = document.getElementById('search-value').value;
+    document.querySelector('.display-title').innerHTML = '';
+    document.querySelector('.lyric').innerHTML = '';
     clearAllValue();
     clearFancyDisplay();
-    document.querySelector('.display-title').innerHTML = 'Song Title Goes Here';
-    document.querySelector('.lyric').innerHTML = 'Lyrics Goes Here';
-    getSongs(searchValue);
+    if (!searchValue) {
+      swal('Failed', 'Please enter a lyrics', 'error');
+    } else {
+      document.querySelector('.display-title').innerHTML =
+        'Song Title Goes Here';
+      document.querySelector('.lyric').innerHTML = 'Lyrics Goes Here';
+      getSongs(searchValue);
+    }
   });
 }
 
@@ -17,63 +32,63 @@ function getSongs(searchTerm) {
   fetch(`${apiUrl}suggest/${searchTerm}`)
     .then((res) => res.json())
     .then((result) => {
-      displaySongs(result.data);
+      // displaySongs(result.data);
       fancyDisplay(result.data);
     });
 }
 
 //SIMPLE DISPLAY
-function displaySongs(data) {
-  if (data.length >= 10) {
-    var html, newHtml;
-    for (var i = 0; i < 10; i++) {
-      html =
-        '<p class="author lead" id="song-name-%id%"><strong>%songTitle%</strong> Album by <span>%artistName%</span> <button class="btn btn-success" id="get-lyrics-%id%">Get Lyrics</button></p>';
-      newHtml = html.replace('%id%', data[i].id);
-      newHtml = newHtml.replace('get-lyrics-%id%', `get-lyrics-${data[i].id}`);
-      //SHORTING LONG TITLE BY CALLING sanitizeData FUNCTION
-      newHtml = newHtml.replace(
-        '%songTitle%',
-        data[i].title.length > 20 ? sanitizeData(data[i].title) : data[i].title
-      );
-      newHtml = newHtml.replace('%artistName%', data[i].artist.name);
+// function displaySongs(data) {
+//   if (data.length >= 10) {
+//     var html, newHtml;
+//     for (var i = 0; i < 10; i++) {
+//       html =
+//         '<p class="author lead" id="song-name-%id%"><strong>%songTitle%</strong> Album by <span>%artistName%</span> <button class="btn btn-success" id="get-lyrics-%id%">Get Lyrics</button></p>';
+//       newHtml = html.replace('%id%', data[i].id);
+//       newHtml = newHtml.replace('get-lyrics-%id%', `get-lyrics-${data[i].id}`);
+//       //SHORTING LONG TITLE BY CALLING sanitizeData FUNCTION
+//       newHtml = newHtml.replace(
+//         '%songTitle%',
+//         data[i].title.length > 20 ? sanitizeData(data[i].title) : data[i].title
+//       );
+//       newHtml = newHtml.replace('%artistName%', data[i].artist.name);
 
-      document.querySelector('.songs').insertAdjacentHTML('beforeend', newHtml);
+//       document.querySelector('.songs').insertAdjacentHTML('beforeend', newHtml);
 
-      const songTitle = data[i].title;
-      const artist = data[i].artist.name;
-      const id = data[i].id;
+//       const songTitle = data[i].title;
+//       const artist = data[i].artist.name;
+//       const id = data[i].id;
 
-      document.getElementById(`get-lyrics-${id}`).onclick = function () {
-        getLyrics(songTitle, artist);
-      };
-    }
-  } else if (data.length < 10) {
-    var html, newHtml;
-    for (var i = 0; i < data.length; i++) {
-      html =
-        '<p class="author lead" id="song-name-%id%"><strong>%songTitle%</strong> Album by <span>%artistName%</span> <button class="btn btn-success" id="get-lyrics-%id%">Get Lyrics</button></p>';
-      newHtml = html.replace('%id%', data[i].id);
-      newHtml = newHtml.replace('get-lyrics-%id%', `get-lyrics-${data[i].id}`);
-      //SHORTING LONG TITLE BY CALLING sanitizeData FUNCTION
-      newHtml = newHtml.replace(
-        '%songTitle%',
-        data[i].title.length > 15 ? sanitizeData(data[i].title) : data[i].title
-      );
-      newHtml = newHtml.replace('%artistName%', data[i].artist.name);
+//       document.getElementById(`get-lyrics-${id}`).onclick = function () {
+//         getLyrics(songTitle, artist);
+//       };
+//     }
+//   } else if (data.length < 10) {
+//     var html, newHtml;
+//     for (var i = 0; i < data.length; i++) {
+//       html =
+//         '<p class="author lead" id="song-name-%id%"><strong>%songTitle%</strong> Album by <span>%artistName%</span> <button class="btn btn-success" id="get-lyrics-%id%">Get Lyrics</button></p>';
+//       newHtml = html.replace('%id%', data[i].id);
+//       newHtml = newHtml.replace('get-lyrics-%id%', `get-lyrics-${data[i].id}`);
+//       //SHORTING LONG TITLE BY CALLING sanitizeData FUNCTION
+//       newHtml = newHtml.replace(
+//         '%songTitle%',
+//         data[i].title.length > 15 ? sanitizeData(data[i].title) : data[i].title
+//       );
+//       newHtml = newHtml.replace('%artistName%', data[i].artist.name);
 
-      document.querySelector('.songs').insertAdjacentHTML('beforeend', newHtml);
+//       document.querySelector('.songs').insertAdjacentHTML('beforeend', newHtml);
 
-      const songTitle = data[i].title;
-      const artist = data[i].artist.name;
-      const id = data[i].id;
+//       const songTitle = data[i].title;
+//       const artist = data[i].artist.name;
+//       const id = data[i].id;
 
-      document.getElementById(`get-lyrics-${id}`).onclick = function () {
-        getLyrics(songTitle, artist);
-      };
-    }
-  }
-}
+//       document.getElementById(`get-lyrics-${id}`).onclick = function () {
+//         getLyrics(songTitle, artist);
+//       };
+//     }
+//   }
+// }
 
 //GETTING LYRICS BY FETCH
 function getLyrics(title, artist) {
